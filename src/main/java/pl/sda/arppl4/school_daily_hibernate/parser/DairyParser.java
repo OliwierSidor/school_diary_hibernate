@@ -51,9 +51,10 @@ public class DairyParser {
         Long id = scanner.nextLong();
         Optional<Student> optionalStudent = daoStudent.get(id, Student.class);
         if (optionalStudent.isPresent()) {
-            handleListCommand(Arrays.asList(Subject.values()));
+            Student student = optionalStudent.get();
+            Set<Grade> gradeList = student.getGrades();
             Subject subject = loadSubject();
-            List<Grade> gradeAllSubjects = daoGrade.list(Grade.class);
+            List<Grade> gradeAllSubjects = gradeList.stream().toList();
             List<Grade> gradeSubject = new ArrayList<>();
             for (Grade grade : gradeAllSubjects) {
                 if (grade.getSubject() == subject) {
@@ -108,13 +109,17 @@ public class DairyParser {
                 }
             }
         } else if (command.equalsIgnoreCase("grade")) {
-            System.out.println("Type Id student which you want to change their gradees ");
-            id = scanner.nextLong();
-            optionalStudent = daoStudent.get(id, Student.class);
-            if (optionalStudent.isPresent()) {
-                List<Grade> gradesList = daoGrade.list(Grade.class);
-                System.out.println("Grades: ");
-                handleListCommand(gradesList);
+            System.out.println("List of students: ");
+            handleListCommand(daoStudent.list(Student.class));
+            System.out.println("Choose student by id");
+            Long idStudent = scanner.nextLong();
+            Optional<Student> optional = daoStudent.get(idStudent, Student.class);
+            if (optional.isPresent()) {
+                Student student1 = optional.get();
+                Set<Grade> grades = student1.getGrades();
+                for (Grade grade : grades) {
+                    System.out.println(grade);
+                }
                 System.out.println("What grade do you want to correct?");
                 Long idGrade = scanner.nextLong();
                 Optional<Grade> optionalGrade = daoGrade.get(idGrade, Grade.class);
@@ -158,14 +163,14 @@ public class DairyParser {
             }
         } else if (command.equalsIgnoreCase("grade")) {
             handleListCommand(daoStudent.list(Student.class));
-            System.out.println("Which student do you want to remove the gradee?");
+            System.out.println("Which student do you want to remove the grade?");
             Long id = scanner.nextLong();
             Optional<Student> optionalStudent = daoStudent.get(id, Student.class);
             if (optionalStudent.isPresent() && !optionalStudent.get().getGrades().isEmpty()) {
                 List<Grade> gradesList = daoGrade.list(Grade.class);
                 System.out.println("Grades: ");
                 handleListCommand(gradesList);
-                System.out.println("What gradee do you want to remove?");
+                System.out.println("What grade do you want to remove?");
                 Long idGrade = scanner.nextLong();
                 Optional<Grade> optionalGrade = daoGrade.get(idGrade, Grade.class);
                 if (optionalGrade.isPresent()) {
@@ -185,7 +190,7 @@ public class DairyParser {
     private void handleAddCommand() {
         String command;
 
-        System.out.println("What you want to add ('Student' or 'Grade' for Student ");
+        System.out.println("What you want to add ('Student' or 'Grade' for Student) ");
         command = scanner.next();
         if (command.equalsIgnoreCase("student")) {
             System.out.println("Type name: ");
@@ -198,14 +203,14 @@ public class DairyParser {
             Student student = new Student(name, surname, indeksNumber, birthDate);
             daoStudent.add(student);
         } else if (command.equalsIgnoreCase("grade")) {
-            System.out.println("Which student do you want to give a gradee?");
+            System.out.println("Which student do you want to give a grade?");
             Long id = scanner.nextLong();
             Optional<Student> optionalStudent = daoStudent.get(id, Student.class);
             if (optionalStudent.isPresent()) {
                 Student student = optionalStudent.get();
                 LocalDateTime receivedGradeDataTime = LocalDateTime.now();
                 Subject subject = loadSubject();
-                System.out.println("What gradee do you want to add?");
+                System.out.println("What grade do you want to add?");
                 Double addedGrade = scanner.nextDouble();
                 Grade grade = new Grade(receivedGradeDataTime, addedGrade, subject, student);
                 daoGrade.add(grade);
