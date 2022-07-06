@@ -85,6 +85,7 @@ public class DairyParser {
         System.out.println("What you want to edit ('Student' or 'Grade' for Student)");
         command = scanner.next();
         if (command.equalsIgnoreCase("student")) {
+            handleListCommand(daoStudent.list(Student.class));
             System.out.println("Type Id student what you want to edit");
             id = scanner.nextLong();
             optionalStudent = daoStudent.get(id, Student.class);
@@ -147,17 +148,21 @@ public class DairyParser {
 
     private void handleRemoveCommand() {
         String command;
-
-        System.out.println("What you want to remove ('Student' or 'Grade' for Student ");
+        System.out.println("What you want to remove ('Student' or 'Grade' for Student)");
         command = scanner.next();
         if (command.equalsIgnoreCase("student")) {
+            handleListCommand(daoStudent.list(Student.class));
             System.out.println("Which student do you want to remove?");
             Long id = scanner.nextLong();
             Optional<Student> optionalStudent = daoStudent.get(id, Student.class);
-            if (optionalStudent.isPresent() && daoGrade.list(Grade.class).isEmpty()) {
+            if (optionalStudent.isPresent()) {
                 Student student = optionalStudent.get();
-                daoStudent.remove(student);
-                System.out.println("Student removed: " + student);
+                if (student.getGrades().isEmpty()){
+                    daoStudent.remove(student);
+                    System.out.println("Student removed: " + student);
+                } else {
+                    System.out.println("Student have grades, you can not remove this student");
+                }
             } else {
                 System.out.println("Student does not exist");
             }
@@ -189,7 +194,6 @@ public class DairyParser {
 
     private void handleAddCommand() {
         String command;
-
         System.out.println("What you want to add ('Student' or 'Grade' for Student) ");
         command = scanner.next();
         if (command.equalsIgnoreCase("student")) {
@@ -203,6 +207,7 @@ public class DairyParser {
             Student student = new Student(name, surname, indeksNumber, birthDate);
             daoStudent.add(student);
         } else if (command.equalsIgnoreCase("grade")) {
+            handleListCommand(daoStudent.list(Student.class));
             System.out.println("Which student do you want to give a grade?");
             Long id = scanner.nextLong();
             Optional<Student> optionalStudent = daoStudent.get(id, Student.class);
