@@ -47,7 +47,6 @@ public class GenericDao<T> {
 
         SessionFactory factory = HibernateUtil.getSessionFactory();
         try (Session session = factory.openSession()) {
-//            Class<T> z = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
             TypedQuery<T> query = session.createQuery("from " + classType.getName(), classType);
             List<T> queryResult = query.getResultList();
             list.addAll(queryResult);

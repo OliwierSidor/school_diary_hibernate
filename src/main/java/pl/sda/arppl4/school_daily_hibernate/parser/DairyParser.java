@@ -157,7 +157,7 @@ public class DairyParser {
             Optional<Student> optionalStudent = daoStudent.get(id, Student.class);
             if (optionalStudent.isPresent()) {
                 Student student = optionalStudent.get();
-                if (student.getGrades().isEmpty()){
+                if (student.getGrades().isEmpty()) {
                     daoStudent.remove(student);
                     System.out.println("Student removed: " + student);
                 } else {
@@ -208,20 +208,25 @@ public class DairyParser {
             daoStudent.add(student);
         } else if (command.equalsIgnoreCase("grade")) {
             handleListCommand(daoStudent.list(Student.class));
-            System.out.println("Which student do you want to give a grade?");
-            Long id = scanner.nextLong();
-            Optional<Student> optionalStudent = daoStudent.get(id, Student.class);
-            if (optionalStudent.isPresent()) {
-                Student student = optionalStudent.get();
-                LocalDateTime receivedGradeDataTime = LocalDateTime.now();
-                Subject subject = loadSubject();
-                System.out.println("What grade do you want to add?");
-                Double addedGrade = scanner.nextDouble();
-                Grade grade = new Grade(receivedGradeDataTime, addedGrade, subject, student);
-                daoGrade.add(grade);
+            try {
+                System.out.println("Which student do you want to give a grade?");
+                Long id = scanner.nextLong();
+                Optional<Student> optionalStudent = daoStudent.get(id, Student.class);
+                if (optionalStudent.isPresent()) {
+                    Student student = optionalStudent.get();
+                    LocalDateTime receivedGradeDataTime = LocalDateTime.now();
+                    Subject subject = loadSubject();
+                    System.out.println("What grade do you want to add?");
+                    Double addedGrade = scanner.nextDouble();
+                    Grade grade = new Grade(receivedGradeDataTime, addedGrade, subject, student);
+                    daoGrade.add(grade);
+                } else {
+                    System.out.println("You type something wrong");
+
+                }
+            } catch (InputMismatchException ime) {
+                System.err.println("Type id of student!");
             }
-        } else {
-            System.out.println("You type something wrong");
         }
     }
 
